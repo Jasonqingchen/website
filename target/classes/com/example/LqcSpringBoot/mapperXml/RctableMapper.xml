@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.LqcSpringBoot.mapper.RcMapper" >
+  <resultMap id="BaseResultMap" type="com.example.LqcSpringBoot.model.Rctable" >
+    <result column="id" property="id" jdbcType="VARCHAR" />
+    <result column="rcdate" property="rcdate" jdbcType="VARCHAR" />
+    <result column="pnumber" property="pnumber" jdbcType="VARCHAR" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="rccount" property="rccount" jdbcType="VARCHAR" />
+    <result column="costprice" property="costprice" jdbcType="VARCHAR" />
+    <result column="costcount" property="costcount" jdbcType="VARCHAR" />
+    <result column="bz" property="bz" jdbcType="VARCHAR" />
+    <result column="sshg" property="sshg" jdbcType="VARCHAR" />
+    <result column="gys" property="gys" jdbcType="VARCHAR" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="qcs" property="qcs" jdbcType="VARCHAR" />
+    <result column="dbfs" property="dbfs" jdbcType="VARCHAR" />
+    <result column="rcfs" property="rcfs" jdbcType="VARCHAR" />
+  </resultMap>
+  <!--查询列表-->
+  <select id="selectList" resultMap="BaseResultMap" >
+    select id, rcdate, pnumber, color, type, rccount, costprice, costcount, bz, sshg,gys,pname,qcs,dbfs,rcfs
+    from rctable
+  </select>
+  <!--入仓查询 是否存在该商品-->
+  <select id="selectBYPnumber" resultType="com.example.LqcSpringBoot.model.Rctable">
+    select  *
+    from rctable where pnumber = #{pnumber}
+  </select>
+<!--条件查询-->
+  <select id="selectKuserBysameting" resultMap="BaseResultMap">
+    select * from rctable  where 1=1
+    <if test="pnumber != null and pnumber != ''">
+      AND pnumber = #{pnumber}
+    </if>
+    <if test="sshg != null and sshg != ''">
+      AND sshg = #{sshg}
+    </if>
+    <if test="start != null and start!=''">
+      AND rcdate &gt;= #{start}
+    </if>
+    <if test="end !=null and end !=''">
+      AND rcdate &lt;= #{end}
+    </if>
+
+  </select>
+  <!--关联查询-->
+  <select id="selectListByGnumber" resultMap="BaseResultMap" >
+    select * from rctable  r WHERE  r.sshg = #{gnumber}
+  </select>
+  <!--删除-->
+  <delete id="deleteKuserById">
+    delete from rctable where id = #{id};
+  </delete>
+  <!--库存总数-->
+  <select id="selectcountBYtable" resultType="java.util.Map">
+    select CAST(SUM(rccount) as DECIMAL)  AS zkcs,count(1) as hwpz FROM rctable;
+  </select>
+</mapper>

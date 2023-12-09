@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.LqcSpringBoot.mapper.ContainerMapper" >
+  <resultMap id="BaseResultMap" type="com.example.LqcSpringBoot.model.Container" >
+    <result column="id" property="id" jdbcType="VARCHAR" />
+    <result column="gysfs" property="gysfs" jdbcType="VARCHAR" />
+    <result column="gnumber" property="gnumber" jdbcType="VARCHAR" />
+    <result column="gsize" property="gsize" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="bankname" property="bankname" jdbcType="VARCHAR" />
+    <result column="cgdate" property="cgdate" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="dgdate" property="dgdate" jdbcType="VARCHAR" />
+    <result column="banknumber" property="banknumber" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="dls" property="dls" jdbcType="VARCHAR" />
+
+    <result column="pol" property="pol" jdbcType="VARCHAR" />
+    <result column="pod" property="pod" jdbcType="VARCHAR" />
+    <result column="chuanname" property="chuanname" jdbcType="VARCHAR" />
+    <result column="dlgs" property="dlgs" jdbcType="VARCHAR" />
+  </resultMap>
+  <!--search lists-->
+  <select id="selectList" resultMap="BaseResultMap" >
+    select *
+    from container;
+  </select>
+  <!--验证是否有重复编号-->
+  <select id="selectByNum" resultMap="BaseResultMap" >
+    select *
+    from container where num = #{num}
+  </select>
+  <!--  根据用户注册姓名查找号码-->
+  <select id="selectByName" resultMap="BaseResultMap" >
+    select *
+    from container where name = #{name}
+  </select>
+  <select id="selectKuserById" resultMap="BaseResultMap" >
+    select *
+    from container where id = #{id}
+  </select>
+
+  <select id="selectListGroupByPhone" resultMap="BaseResultMap" >
+    select phone,count(1) as id
+    from container group by phone
+  </select>
+
+  <select id="selectListGroupBySex" resultMap="BaseResultMap" >
+    select sex,count(1) as id
+    from container group by sex
+  </select>
+
+  <select id="selectListGroupByDate" resultMap="BaseResultMap" >
+    select date,count(1)  as id
+    from container group by date_format(date,'%Y-%M-%d');
+  </select>
+
+<!--根据 number 查询 id-->
+  <select id="selectByGnumber" resultType="java.lang.String" >
+    select  id
+    from container where gnumber = #{gnumber}
+  </select>
+
+  <!--<select id="selectListisStatus" resultMap="BaseResultMap" >
+    select  id,name,num,sex,cm,phone,dyname,date,(case status
+      when '1' then '已通过'
+      when '2' then '待审核'
+      end) as status
+    from container where status=1
+  </select>-->
+  <select id="selectListByStatus" resultMap="BaseResultMap" >
+    select  id,name,num,sex,cm,phone,dyname,date,(case status
+      when '1' then '已通过'
+      when '2' then '待审核'
+      end) as status
+    from container where status=2
+  </select>
+  <select id="selectKuserByNum" resultMap="BaseResultMap" >
+    select *
+    from container where num = #{num}
+  </select>
+  <delete id="deleteKuserById">
+    delete from container where id = #{id};
+  </delete>
+
+  <select id="selectKuserBysameting" resultMap="BaseResultMap">
+    select * from container t  where 1=1
+    <if test="gnumber != null and gnumber != ''">
+      AND t.gnumber = #{gnumber}
+    </if>
+    <if test="pod != null and pod != ''">
+      AND t.pod = #{pod}
+    </if>
+    <if test="phone != null and phone != ''">
+      AND t.phone = #{phone}
+    </if>
+
+  </select>
+
+  <delete id="cleanTable">
+    truncate table container
+  </delete>
+
+  <update id="updateAll" parameterType="java.lang.Integer">
+    update container t set t.status=1 where t.status =2
+  </update>
+
+  <update id="updateKuser" parameterType="com.example.LqcSpringBoot.model.Container" >
+    update container t
+    set
+      t.name = #{name},
+      t.phone = #{phone},
+      t.sex = #{sex},
+      t.num = #{num},
+      t.dyname = #{dyname},
+      t.cm = #{cm}
+    where id = #{id}
+  </update>
+
+  <!--总货柜数-->
+  <select id="selectcountBYtable" resultType="java.lang.String">
+    select sum(count) as hgzs FROM container;
+  </select>
+  <!--查询数据货柜数量-->
+  <select id="selectListByYears" resultType="java.lang.Integer">
+    select IFNULL(b.sum, 0) ordercount,a.date
+    from  (
+            select DATE_FORMAT(adddate(DATE_SUB(CURDATE(), INTERVAL dayofyear(now()) - 1 DAY),
+                                       INTERVAL numlist.id - 1 month), '%Y-%m') as date
+            from (SELECT @xi := @xi + 1 as id
+              from (SELECT 1 UNION SELECT 2 UNION SELECT 3) xc1,
+              (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4) xc2,
+              (SELECT @xi := 0) xc0) as numlist
+          ) a
+            left join
+          (
+            SELECT count(*) sum, DATE_FORMAT(cgdate, '%Y-%m') as date
+            FROM container WHERE YEAR(cgdate) = YEAR(NOW()) GROUP BY date ORDER BY date
+          ) b
+          on a.date = b.date order by date
+  </select>
+</mapper>

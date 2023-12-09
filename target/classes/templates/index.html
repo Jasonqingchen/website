@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel = "icon" href ="/imgs/table.jpeg">
+    <title>库存管理平台</title>
+    <link rel="stylesheet" href="/vue/element-ui.min.css"/>
+</head>
+<style>
+    .input-with-select,.el-input__inner{
+        background: transparent;
+    }
+    .bg-purple {
+        background: #104F3E;
+    }
+
+    .grid-content {
+        border-radius: 4px;
+        min-height: 36px;
+    }
+    .row-bg {
+        padding: 10px 0;
+        background-color: #104F3E;
+    }
+    .nr{
+        background-color: #FFFFFF;
+        color: #af1028;
+    }
+    .kbg{
+        background:url("/imgs/kbg.jpeg");
+    }
+    .zbj{
+        background:url("/imgs/kbg.jpeg");
+        background-size: 100%;
+    }
+    .opacity{background: rgba(144, 147, 153, 0.5); filter:progid:DXImageTransform.Microsoft.Gradient(startColorstr=#909399, endColorstr=#909399);}
+
+
+</style>
+<body class="zbj">
+<!--html代码 -->
+<div id="app" >
+    <br><br><br><br><br><br><br><br><br><br><br>
+    <el-row class="opacity">
+            <el-col :span="4"><div class="grid-content"></div></el-col>
+            <el-col :span="10" class="bgc" style="height:330px;opacity:0.6; text-align: center"><div>
+                <br><br><br>
+                <span style="color: #FFFFFF;"><strong style="font-size: 50px; font-style: unset">库存管理平台</strong><br><span style="font-size: 20px;">KU CUN GUAN LI PING TAI</span></span>
+            </div></el-col>
+            <el-col :span="2"><div class="grid-content"></div></el-col>
+            <el-col :span="8" style="height: 330px; text-align: left;"><div style=" background: rgba(255,255,255,0);height: 330px; text-align: center">
+                <br>
+                <div id="error"></div>
+<!--                <span style="color: #f5f5f5;"><strong style="font-size: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;库存管理平台</strong><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 10px;">KU CUN GUAN LI PING TAI</span></span>-->
+                <br><br>
+                <el-form ref="form" :model="form"  label-width="80px" style="width: 400px; color: #FFFFFF;">
+                    <el-form-item>
+                        <span slot="label">
+                            <span style="color: #FFFFFF">用户名</span>
+                            <span style="color: red">*</span>
+                        </span>
+                        <el-input placeholder="请输入用户名" style="webkit-text-fill-color:#ffffff" prefix-icon="el-icon-user-solid" v-model="form.name" @focus="nameclik" @keyup.enter.native="loginpage" class="input-with-select" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <span slot="label">
+                            <span style="color: #FFFFFF">登录密码</span>
+                            <span style="color: red">*</span>
+                        </span>
+                        <el-input  placeholder="请输入密码" style="webkit-text-fill-color:#ffffff" type="password" prefix-icon="el-icon-lock" v-model="form.password" @keyup.enter.native="loginpage" @focus="passwordclik" class="input-with-select" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item  style="height: 40px;">
+                        <span slot="label">
+                            <span style="color: #FFFFFF">验证码</span>
+                            <span style="color: red">*</span>
+                        </span>
+                        <el-row>
+                            <el-col :span="12"><div><el-input placeholder="输入验证码" style="webkit-text-fill-color:#ffffff" prefix-icon="el-icon-help" v-model="form.code" @focus="yzm" @keyup.enter.native="loginpage" class="input-with-select" clearable></el-input></div></el-col>
+                            <el-col :span="12"><div class="grid-content bg-purple-light">&nbsp;&nbsp;<el-image id="yzm_img" src="/kunyueye/url" @click="changeYZM"/>
+                                <span id="valistr_msg"></span></div></el-col>
+                        </el-row>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button-group style="text-align: left">
+                            <el-button @click="loginpage" style="width: 340px;background-color: #af1028; border:#af1028; color: #FFFFFF;">登 录</el-button>
+                        </el-button-group>
+                    </el-form-item>
+                </el-form>
+                <br><br><br>
+            </div></el-col>
+    </el-row><br><br><br><br><br>
+    <el-row>
+        <el-col :span="24"><div class="grid-content" style="text-align: center;" ><span><el-link :underline="false" style="color: #fff1f1"><strong>     库存管理平台
+</strong></el-link> </span><br><span><el-link type="info" :underline="false" style="color: #fff1f1">Author：Jason</el-link></span></div></el-col>
+    </el-row>
+</div>
+</body>
+<script src="/vue/jquery.min.js"></script>
+<script src="/vue/vue.min.js"></script>
+<script src="/vue/element-ui.min.js"></script>
+<script src="/js/coment.js"></script>
+<script src="/js/index.js"></script>
+</html>

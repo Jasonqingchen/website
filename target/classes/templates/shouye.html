@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel = "icon" href ="/imgs/table.jpeg">
+    <title>库存管理平台</title>
+    <link rel="stylesheet" href="/vue/element-ui.min.css"/>
+<!--    <script src="https://unpkg.com/wangeditor/dist/wangEditor.min.js"></script>-->
+</head>
+<style lang="less" scoped>
+    .borderNone /deep/ .el-input__inner {
+        border: none;
+    }
+</style>
+
+<style>
+    .my-label {
+        background: #E1F3D8;
+    }
+
+    .my-content {
+        background: #FDE2E2;
+    }
+    .my-contentcpname {
+        background: #E1F3D8;
+    }
+    .demo-table-expand {
+        font-size: 0;
+    }
+    .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+    }
+    .demo-table-expand .el-form-item {
+        margin-right: 10;
+        margin-bottom: 0;
+        width: 20%;
+    }
+    .bgc{
+        background:url("/imgs/ys.jpg");
+        background-size: 100%;
+        height: 300px;
+    }
+    .input-with-select,.el-input__inner{
+        background: transparent;
+    }
+    .q{
+        color: #FFFFFF;
+    }
+</style>
+<body>
+<!--html代码 -->
+<div id="app">
+<!--    <el-card class="bgc"></el-card>-->
+    <el-card class="box-card">
+
+        <template>
+            <el-row :gutter="20">
+                <el-col :span="6">
+                    <el-tag  icon="el-icon-turn-off" style="width: 200px;height: 100px;text-align: center;" ><div style="margin-top: 15px;"><strong>总库存数</strong><br><strong style="font-size: 30px;"><i class="el-icon-s-flag" style="color: red"></i>&nbsp;&nbsp;<span id="zkcs">0</span></strong></div></el-tag></el-col>
+                <el-col :span="6">
+                    <el-tag type="success" style="width: 200px;height: 100px;text-align: center;" ><div style="margin-top: 15px;"><strong>总订单数</strong><br><strong style="font-size: 30px;"><i class="el-icon-s-flag" style="color: blue"></i>&nbsp;&nbsp;<span id="zdds">0</span></strong></div></el-tag></el-col>
+                <el-col :span="6">
+                    <el-tag type="info" style="width: 200px;height: 100px;text-align: center;" ><div style="margin-top: 15px;"><strong>总货柜数</strong><br><strong style="font-size: 30px;"><i class="el-icon-star-on" style="color: darkred"></i>&nbsp;&nbsp;<span id="zhgs">0</span></strong></div></el-tag></el-col>
+                <el-col :span="6">
+                    <el-tag type="warning" style="width: 200px;height: 100px;text-align: center;" ><div style="margin-top: 15px;"><strong>货品种类</strong><br><strong style="font-size: 30px;"><i class="el-icon-s-promotion" style="color: blue"></i>&nbsp;&nbsp;<span id="hpzl">0</span></strong></div></el-tag></el-col>
+            </el-row><br>
+            <div style="text-align: center;">
+                <span style="font-size: 40px; color: #696e6d;"><strong><!--<i class="el-icon-truck"></i>-->库存管理平台</strong></span><br>
+                <span style="font-size: 20px; color: #5b5d5c; margin-left: 40px"><strong>KU CUN GUAN LI PING TAI </strong><!--<el-link type="danger" @click="out">退出</el-link>--></span>
+            </div><br><br>
+            <el-tabs type="border-card" @tab-click="tableclick" value ="hglist">
+                <el-tab-pane label="货柜详情信息" name="hglist">
+                    <span slot="label"><i class="el-icon-files">货柜详情信息</i> </span>
+                    <el-button-group style="width: 100%;color: #FFFFFF;">
+                        <el-form :model="form" :inline="true" class="demo-form-inline" style="color: #FFFFFF;text-align: right" >
+                            <el-row>
+                                <el-col :span="13" style="color: #FFFFFF;text-align: left;">
+                                    <el-form-item label="提单号">
+                                        <el-input v-model="form.gnumber" style="width: 200px;" class="input-with-select" clearable></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="POD" style="text-align: left">
+                                        <el-input v-model="form.pod" style="width: 200px;border: #FFFFFF;" class="input-with-select" clearable></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="手机号" style="text-align: left">
+                                        <el-input v-model="form.phone" style="width: 150px;border: #FFFFFF;" class="input-with-select" clearable></el-input>
+                                    </el-form-item>
+                                    <el-button  @click="seach" icon="el-icon-search">搜索</el-button>
+                                </el-col>
+                                <el-col :span="11" style="text-align: center;">
+                                    <div class="grid-content bg-purple-light" style="text-align: center;">
+                                        <el-button-group>
+                                            <!--                                    <el-button style="background-color: #0d4f34;border: #0d4f34;color: #FFFFFF" icon="el-icon-place" @click="showmap" size="mini">会员数据分析</el-button>-->
+                                            <!--                                    <el-button style="background-color: #991427;border: #991427;color: #FFFFFF" icon="el-icon-s-platform" @click="examine" size="mini">审核</el-button>-->
+                                            <el-button type="success" icon="el-icon-wallet" @click="add" size="mini">新增货柜</el-button>
+                                            <el-button type="danger"  icon="el-icon-close" @click="qk" size="mini">清空数据</el-button>
+                                            <el-button size="mini" style="text-align: right;" type="primary" @click="exportExcel"><i
+                                                    class="el-icon-folder-opened"></i>导出到Excel
+                                            </el-button><br><br>
+                                            <el-upload
+                                                    ref="upload"
+                                                    action="/excel/dr"
+                                                    :on-preview="handlePreview"
+                                                    :on-remove="handleRemove"
+                                                    :file-list="fileList"
+                                                    :auto-upload="false">
+
+                                                <el-button slot="trigger" size="mini"style="background-color: #0d4f34;text-align: right;border: #0d4f34;color: #FFFFFF"><i class="el-icon-more"></i>选取文件</el-button>
+                                                <el-button size="mini" style="background-color: #0d4f34;border: #0d4f34;text-align: right;color: #FFFFFF" @click="submitUpload">
+                                                    <i class="el-icon-upload2"></i>开始导入
+                                                </el-button>
+
+                                            </el-upload>
+                                        </el-button-group>
+                                        <br>
+                                        <div slot="tip" class="el-upload__tip" style="color: #601934;"><strong>注:1、只能上传Excel文件 2、 上传成功后手动刷新页面 3、请按照指定模板进行填写内容并上传</strong></div>
+                                    </div><br><br>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-button-group>
+                    <el-table
+                            :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize).filter(data => !search || data.gnumber.toLowerCase().includes(search.toLowerCase()))"
+                            ref="multipleTable"
+                            v-loading="loading"
+                            border
+                            @row-click="rowclick"
+                            :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                            @selection-change="handleSelectionChange"
+                            style="width: 100%;">
+                        <el-table-column type="expand" fixed>
+                            <template slot-scope="props">
+                                <el-form label-position="center" inline class="demo-table-expand">
+                                    <el-form-item label="货柜号码">
+                                        <span> <el-link  disabled>{{ props.row.gnumber }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="运输方式">
+                                        <span> <el-link  disabled>{{ props.row.gysfs }}</el-link></span>
+                                    </el-form-item>
+
+                                    <el-form-item label="货柜尺寸">
+                                        <span> <el-link  disabled>{{ props.row.gsize }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="电话">
+                                        <span> <el-link  disabled>{{ props.row.phone }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="出发港">
+                                        <span> <el-link  disabled>{{ props.row.pol }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="目的港">
+                                        <span> <el-link  disabled>{{ props.row.pod }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="出港时间">
+                                        <span> <el-link  disabled>{{ props.row.cgdate }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="到港时间">
+                                        <span> <el-link  disabled>{{ props.row.dgdate }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="状态">
+                                        <span> <el-link  disabled>{{ props.row.status }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="代理商费用">
+                                        <span> <el-link  disabled>{{ props.row.dls }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="货值">
+                                        <span> <el-link  disabled>{{ props.row.price }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="数量">
+                                        <span> <el-link  disabled>{{ props.row.count }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="类型">
+                                        <span> <el-link  disabled>{{ props.row.type }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="船公司">
+                                        <span> <el-link  disabled>{{ props.row.chuanname }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="代理公司">
+                                        <span> <el-link  disabled>{{ props.row.dlgs }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="类型">
+                                        <span> <el-link  disabled>{{ props.row.type }}</el-link></span>
+                                    </el-form-item>
+                                    <el-form-item label="其他内容">
+                                        <span> <el-link  disabled>{{ props.row.content }}</el-link></span>
+                                    </el-form-item>
+                                </el-form>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                fixed
+                                label="序号"
+                                type="index"
+                                width="55"
+                                class="noExl">
+                        </el-table-column>
+                        <el-table-column
+                                fixed
+                                label="提单号"
+                                prop="gnumber"
+                                width="150">
+                        </el-table-column>
+                        <el-table-column
+                                label="POL"
+                                prop="pol"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="POD"
+                                prop="pod"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="船公司"
+                                prop="chuanname"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="离港时间"
+                                prop="cgdate"
+                                sortable
+                                :formatter="formatDate"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="到港时间"
+                                prop="dgdate"
+                                sortable
+                                :formatter="formatDate"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="代理公司"
+                                prop="dlgs"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="状态"
+                                prop="status"
+                                width="120">
+                            <template slot-scope="scope">
+                                <el-tag
+                                        :type="scope.row.status === '未到港' ? 'danger' : 'success'"
+                                        disable-transitions>{{scope.row.status}}</el-tag>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="运输方式"
+                                prop="gysfs"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="联系方式"
+                                prop="phone"
+                                width="220">
+                        </el-table-column>
+                        <el-table-column
+                                label="柜子尺寸"
+                                prop="gsize"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="代理费是否支付"
+                                prop="dls"
+                                width="120">
+                            <template slot-scope="scope">
+                                <el-tag
+                                        :type="scope.row.dls === '未支付' ? 'danger' : 'success'"
+                                        disable-transitions>{{scope.row.dls}}</el-tag>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="类别"
+                                prop="type"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="数量"
+                                prop="count"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="货值"
+                                prop="price"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="补充说明"
+                                prop="content"
+                                width="400">
+                        </el-table-column>
+                        <el-table-column label="操作" width="200" fixed="right">
+                            <template slot="header" slot-scope="scope">
+                                <el-input
+                                        v-model="search"
+                                        size="mini"
+                                        placeholder="输入货柜编号"/>
+                            </template>
+                            <template slot-scope="scope">
+                                <el-button-group>
+                                    <el-button
+                                            icon="el-icon-edit"
+                                            size="mini"
+                                            @click="handleEdit(scope.$index, scope.row)" type="primary">编辑</el-button>
+                                    <el-button
+                                            icon="el-icon-delete"
+                                            size="mini"
+                                            type="danger"
+                                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </el-button-group>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!--货柜详情信息分页-->
+                    <div class="block" style="text-align: center;">
+                        <br>
+                        <el-pagination
+                                @size-change="handleSizeChange"
+                                @current-change="handleCurrentChange"
+                                :current-page="currentPage"
+                                :page-sizes="[10,20,50,1000]"
+                                :page-size="pagesize"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="tableData.length">
+                        </el-pagination>
+                    </div>
+                    <br><br>
+                    <div style="text-align: center;">
+                        <el-link type="info" style="font-size: 30px;"disabled><Strong>所属货柜货物清单列表</Strong></el-link>
+                    </div>
+                    <br><br>
+                    <!--关联货物表-->
+                    <el-table
+                            :data="tableData5.slice((currentPagegl-1)*pagesizegl,currentPagerc*pagesizegl).filter(data => !search5 || data.pnumber.toLowerCase().includes(search5.toLowerCase()))"
+                            ref="multipleTable"
+                            v-loading="loading"
+                            border
+                            height="500"
+                            :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                            @selection-change="handleSelectionChangegl"
+                            style="width: 100%;">
+                        <el-table-column
+                                label="序号"
+                                type="index"
+                                width="55">
+                        </el-table-column>
+                        <el-table-column
+                                label="入仓时间"
+                                width="150"
+                                prop="rcdate">
+                        </el-table-column>
+                        <el-table-column
+                                label="商品编码"
+                                prop="pnumber"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="商品名称"
+                                prop="pname"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="颜色"
+                                prop="color"
+                                width="60">
+                        </el-table-column>
+                        <el-table-column
+                                label="规格"
+                                prop="type"
+                                width="150">
+                        </el-table-column>
+                        <el-table-column
+                                label="库存"
+                                prop="rccount"
+                                color="red"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="成本单价"
+                                prop="costprice"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="成本总价"
+                                prop="costcount"
+                                width="80">
+                        </el-table-column>
+                        <el-table-column
+                                label="所属货柜编码"
+                                prop="sshg"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="备注"
+                                prop="bz"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column label="操作" width="250">
+                            <template slot="header" slot-scope="scope">
+                                <el-input
+                                        v-model="search5"
+                                        size="mini"
+                                        placeholder="输入商品编号"/>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!--入仓单及列表分页-->
+                    <div class="block" style="text-align: center;">
+                        <br>
+                        <el-pagination
+                                @size-change="handleSizeChangegl"
+                                @current-change="handleCurrentChangegl"
+                                :current-page="currentPagegl"
+                                :page-sizes="[10,20,50,1000]"
+                                :page-size="pagesizegl"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="tableData5.length">
+                        </el-pagination>
+                    </div>
+                    <br><br>
+                </el-tab-pane>
+                <el-tab-pane label="入库单及列表" name="rclist">
+                    <span slot="label"><i class="el-icon-postcard"></i> 入库单</span>
+                    <el-button-group style="width: 100%;color: #FFFFFF;">
+                        <el-form :model="rcform" ref="rcform":inline="true" class="demo-form-inline" style="color: #FFFFFF;text-align: right" >
+                            <el-row>
+                                <el-col :span="17" style="color: #FFFFFF;text-align: left;">
+                                    <el-form-item label="产品编号">
+                                        <el-input v-model="rcform.pnumber" style="width: 200px;" class="input-with-select" clearable></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="所属货柜" style="text-align: left">
+                                        <el-input v-model="rcform.sshg" style="width: 200px;border: #FFFFFF;" class="input-with-select" clearable></el-input>
+                                    </el-form-item><br>
+                                    <el-form-item label="入仓日期" style="text-align: left">
+                                        <div class="block">
+                                            <el-date-picker
+                                                    v-model="rcform.rcval1"
+                                                    type="date"
+                                                    placeholder="选择开始">
+                                            </el-date-picker>
+                                            <el-date-picker
+                                                    v-model="rcform.rcval2"
+                                                    type="date"
+                                                    placeholder="选择结束">
+                                            </el-date-picker>
+                                        </div>
+                                    </el-form-item>
+                                    <el-button  @click="seachrc" icon="el-icon-search">搜索</el-button>
+                                </el-col>
+                                <el-col :span="7" style="text-align: center;">
+                                    <div class="grid-content bg-purple-light" style="text-align: center;">
+                                        <el-button-group>
+                                            <el-button type="success" icon="el-icon-wallet" @click="rcopen" size="mini">创建入库单</el-button>
+                                            <el-button size="mini" style="text-align: right;" type="primary" @click="exportExcelrc"><i
+                                                    class="el-icon-folder-opened"></i>导出到Excel
+                                            </el-button>
+                                        </el-button-group></div><br><br>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-button-group>
+                    <el-table
+                            :data="tableData2.slice((currentPagerc-1)*pagesizerc,currentPagerc*pagesizerc).filter(data => !search2 || data.pnumber.toLowerCase().includes(search2.toLowerCase()))"
+                            ref="multipleTable"
+                            v-loading="loading"
+                            border
+                            :summary-method="getSummariesrc"
+                            show-summary
+                            height="500"
+                            :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                            @selection-change="handleSelectionChangerc"
+                            style="width: 100%;">
+                        <el-table-column
+                                label="序号"
+                                type="index"
+                                fixed
+                                width="55">
+                        </el-table-column>
+                        <el-table-column
+                                label="入仓时间"
+                                fixed
+                                width="150"
+                                prop="rcdate">
+                        </el-table-column>
+                        <el-table-column
+                                label="商品编码"
+                                prop="pnumber"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="商品名称"
+                                prop="pname"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="颜色"
+                                prop="color"
+                                width="60">
+                        </el-table-column>
+                        <el-table-column
+                                label="规格"
+                                prop="type"
+                                width="150">
+                        </el-table-column>
+                        <el-table-column
+                                label="库存"
+                                prop="rccount"
+                                color="red"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="成本单价"
+                                prop="costprice"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="成本总价"
+                                prop="costcount"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="所属货柜编码"
+                                prop="sshg"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="打包方式"
+                                prop="dbfs"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                label="入库方式"
+                                prop="rcfs"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                label="备注"
+                                prop="bz"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column label="操作" width="250" fixed="right">
+                            <template slot="header" slot-scope="scope">
+                                <el-input
+                                        v-model="search2"
+                                        size="mini"
+                                        placeholder="输入商品编号"/>
+                            </template>
+                            <template slot-scope="scope">
+                                <el-button-group>
+                                    <!--<el-button
+                                            icon="el-icon-edit"
+                                            size="mini"
+                                            @click="handleEdit(scope.$index, scope.row)" type="primary">编辑</el-button>-->
+                                    <el-button
+                                            icon="el-icon-delete"
+                                            size="mini"
+                                            type="danger"
+                                            @click="handleDeleterc(scope.$index, scope.row)">删除</el-button>
+                                </el-button-group>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!--入仓单及列表分页-->
+                    <div class="block" style="text-align: center;">
+                        <br>
+                        <el-pagination
+                                @size-change="handleSizeChangerc"
+                                @current-change="handleCurrentChangerc"
+                                :current-page="currentPagerc"
+                                :page-sizes="[10,20,50,1000]"
+                                :page-size="pagesizerc"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="tableData2.length">
+                        </el-pagination>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane label="出库库单及列表" name="cclist">
+                    <span slot="label"><i class="el-icon-postcard"></i> 出库单</span>
+                    <el-button-group style="width: 100%;color: #FFFFFF;">
+                        <el-form :model="ccform" ref="ccform":inline="true" class="demo-form-inline" style="color: #FFFFFF;text-align: right" >
+                            <el-row>
+                                <el-col :span="17" style="color: #FFFFFF;text-align: left;">
+                                    <el-form-item label="订单编号">
+                                        <el-input v-model="ccform.orderid" style="width: 200px;" class="input-with-select" clearable></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="客户电话" style="text-align: left">
+                                        <el-input v-model="ccform.customerphone" style="width: 200px;border: #FFFFFF;" class="input-with-select" clearable></el-input>
+                                    </el-form-item><br>
+                                    <el-form-item label="出库日期" style="text-align: left">
+                                        <div class="block">
+                                            <el-date-picker
+                                                    v-model="ccform.rcval1"
+                                                    type="date"
+                                                    placeholder="选择开始">
+                                            </el-date-picker>
+                                            <el-date-picker
+                                                    v-model="ccform.rcval2"
+                                                    type="date"
+                                                    placeholder="选择结束">
+                                            </el-date-picker>
+                                        </div>
+                                    </el-form-item>
+                                    <el-button  @click="seachcc" icon="el-icon-search">搜索</el-button>
+                                </el-col>
+                                <el-col :span="7" style="text-align: center;">
+                                    <div class="grid-content bg-purple-light" style="text-align: center;">
+                                        <el-button-group>
+                                            <el-button type="success" icon="el-icon-wallet" @click="ccopen" size="mini">创建出库单</el-button>
+                                            <el-button size="mini" style="text-align: right;" type="primary" @click="exportExcelcc"><i
+                                                    class="el-icon-folder-opened"></i>导出到Excel
+                                            </el-button>
+                                        </el-button-group></div><br><br>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-button-group>
+                    <el-table
+                            :data="tableData3.slice((currentPagecc-1)*pagesizecc,currentPagecc*pagesizecc).filter(data => !search3 || data.orderid.toLowerCase().includes(search3.toLowerCase()))"
+                            ref="multipleTable"
+                            v-loading="loading"
+                            :summary-method="getSummariescc"
+                            show-summary
+                            border
+                            height="500"
+                            :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                            @selection-change="handleSelectionChangecc"
+                            style="width: 100%;">
+                        <el-table-column
+                                label="序号"
+                                fixed
+                                type="index"
+                                width="55">
+                        </el-table-column>
+                        <el-table-column
+                                label="出库时间"
+                                fixed
+                                width="150"
+                                prop="ccdate">
+                        </el-table-column>
+                        <el-table-column
+                                label="订单编号"
+                                width="150"
+                                prop="orderid">
+                        </el-table-column>
+                        <el-table-column
+                                label="商品编码"
+                                prop="pnumber"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="商品名称"
+                                prop="pname"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="颜色"
+                                prop="color"
+                                width="60">
+                        </el-table-column>
+                        <el-table-column
+                                label="规格"
+                                prop="type"
+                                width="150">
+                        </el-table-column>
+                        <el-table-column
+                                label="出库数量"
+                                prop="cccount"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="单价"
+                                prop="ccprice"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="总价"
+                                prop="ccsumprice"
+                                width="80">
+                        </el-table-column>
+                        <el-table-column
+                                label="客户姓名"
+                                prop="customername"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="客户电话"
+                                prop="customerphone"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="客户地址"
+                                prop="customeraddress"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="出库方式"
+                                prop="ccfs"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="备注"
+                                prop="bz"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column label="操作" width="250" fixed="right">
+                            <template slot="header" slot-scope="scope">
+                                <el-input
+                                        v-model="search3"
+                                        size="mini"
+                                        placeholder="输入订单编号"/>
+                            </template>
+                            <template slot-scope="scope">
+                                <el-button-group>
+                                    <!--<el-button
+                                            icon="el-icon-edit"
+                                            size="mini"
+                                            @click="handleEdit(scope.$index, scope.row)" type="primary">编辑</el-button>-->
+                                    <el-button
+                                            icon="el-icon-delete"
+                                            size="mini"
+                                            type="danger"
+                                            @click="handleDeletecc(scope.$index, scope.row)">删除</el-button>
+                                </el-button-group>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!--入仓单及列表分页-->
+                    <div class="block" style="text-align: center;">
+                        <br>
+                        <el-pagination
+                                @size-change="handleSizeChangecc"
+                                @current-change="handleCurrentChangecc"
+                                :current-page="currentPagecc"
+                                :page-sizes="[10,20,50,1000]"
+                                :page-size="pagesizecc"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="tableData3.length">
+                        </el-pagination>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane label="商品进销存及盘点管理" name="jxclist">
+                    <span slot="label"><i class="el-icon-tickets"></i> 商品进销存及盘点管理</span>
+                    <el-button-group style="width: 100%;color: #FFFFFF;">
+                        <el-form :model="jxcform" ref="jxcform":inline="true" class="demo-form-inline" style="color: #FFFFFF;text-align: right" >
+                            <el-row>
+                                <el-col :span="17" style="color: #FFFFFF;text-align: left;">
+                                    <el-form-item label="商品编号">
+                                        <el-input v-model="jxcform.pnumber" style="width: 200px;" class="input-with-select" clearable></el-input>
+                                    </el-form-item>
+                                   <!-- <el-form-item label="日期" style="text-align: left">
+                                        <div class="block">
+                                            <el-date-picker
+                                                    v-model="jxcform.rcval1"
+                                                    type="date"
+                                                    placeholder="选择开始">
+                                            </el-date-picker>
+                                            <el-date-picker
+                                                    v-model="jxcform.rcval2"
+                                                    type="date"
+                                                    placeholder="选择结束">
+                                            </el-date-picker>
+                                        </div>
+                                    </el-form-item>-->
+                                    <el-button  @click="seachjxc" icon="el-icon-search">搜索</el-button>
+                                </el-col>
+                                <el-col :span="7" style="text-align: center;">
+                                    <div class="grid-content bg-purple-light" style="text-align: center;">
+                                        <el-button-group>
+                                            <el-button size="mini" style="text-align: right;" type="primary" @click="exportExceljxc"><i
+                                                    class="el-icon-folder-opened"></i>导出到Excel
+                                            </el-button>
+                                        </el-button-group></div><br><br>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-button-group>
+                    <el-table
+                            :data="tableData4.slice((currentPagejxc-1)*pagesizejxc,currentPagejxc*pagesizejxc).filter(data => !search4 || data.pnumber.toLowerCase().includes(search4.toLowerCase()))"
+                            ref="multipleTable"
+                            show-summary
+                            border
+                            :summary-method="getSummariesjxc"
+                            height="500"
+                            :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                            @selection-change="handleSelectionChangejxc"
+                            style="width: 100%;">
+                        <el-table-column
+                                label="序号"
+                                type="index"
+                                width="55">
+                        </el-table-column>
+                        <el-table-column
+                                label="产品编号"
+                                width="150"
+                                prop="pnumber">
+                        </el-table-column>
+                        <el-table-column
+                                label="产品名称"
+                                width="150"
+                                prop="pname">
+                        </el-table-column>
+                        <el-table-column
+                                label="规格"
+                                prop="type"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="颜色"
+                                prop="pname"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="期初数"
+                                prop="qcs"
+                                width="160">
+                        </el-table-column>
+                        <el-table-column
+                                label="入库数量"
+                                prop="rccount"
+                                width="150">
+                        </el-table-column>
+                        <el-table-column
+                                label="出库数量"
+                                prop="cccount"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="结存条数"
+                                prop="jccount"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="盘点条数"
+                                prop="pdcount"
+                                width="250">
+                            <template slot-scope="scope">
+                                <!--<el-input v-model="scope.row.pdcount" @blur="handleInputBlur" placeholder="请输入内容" Style="width: 150px;"></el-input>-->
+                                <el-input-number size="medium" @change="handleInputBlur(scope.row)" v-model="scope.row.pdcount"></el-input-number>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="差异条数"
+                                prop="cycount"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="盘点状态"
+                                prop="pdstatus"
+                                width="180">
+                        </el-table-column>
+
+                        <el-table-column label="操作" width="250" fixed="right">
+                            <template slot="header" slot-scope="scope">
+                                <el-input
+                                        v-model="search4"
+                                        size="mini"
+                                        placeholder="输入订商品编号"/>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!--进销存单及列表分页-->
+                    <div class="block" style="text-align: center;">
+                        <br>
+                        <el-pagination
+                                @size-change="handleSizeChangejxc"
+                                @current-change="handleCurrentChangejxc"
+                                :current-page="currentPagejxc"
+                                :page-sizes="[10,20,50,1000]"
+                                :page-size="pagesizejxc"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="tableData4.length">
+                        </el-pagination>
+                    </div>
+                    <br><br>
+                    <div style="text-align: center;">
+                        <el-link type="info" style="font-size: 30px;"disabled><Strong>进销存日期查询表</Strong></el-link>
+                    </div>
+                    <br><br>
+                    <el-button-group style="width: 100%;color: #FFFFFF;">
+                        <el-form :model="jxcbfform" ref="jxcbfform":inline="true" class="demo-form-inline" style="color: #FFFFFF;text-align: right" >
+                            <el-row>
+                                <el-col :span="17" style="color: #FFFFFF;text-align: left;">
+                                     <el-form-item label="日期" style="text-align: left">
+                                         <div class="block">
+                                             <el-date-picker
+                                                     v-model="jxcbfform.rcval1"
+                                                     type="date"
+                                                     placeholder="选择开始">
+                                             </el-date-picker>
+                                             <el-date-picker
+                                                     v-model="jxcbfform.rcval2"
+                                                     type="date"
+                                                     placeholder="选择结束">
+                                             </el-date-picker>
+                                         </div>
+                                     </el-form-item>
+                                    <el-button  @click="seachjxcbf" icon="el-icon-search">搜索</el-button>
+                                </el-col>
+                                <el-col :span="7" style="text-align: center;">
+                                    <div class="grid-content bg-purple-light" style="text-align: center;">
+                                        <el-button-group>
+                                            <el-button size="mini" style="text-align: right;" type="primary" @click="exportExceljxcbf"><i
+                                                    class="el-icon-folder-opened"></i>导出到Excel
+                                            </el-button>
+                                        </el-button-group></div><br><br>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-button-group><br><br>
+                    <!--进销存日期查询表-->
+                    <el-table
+                            :data="tableData8.slice((currentPagejxcbf-1)*pagesizejxcbf,currentPagejxcbf*pagesizejxcbf).filter(data => !search8 || data.pnumber.toLowerCase().includes(search8.toLowerCase()))"
+                            ref="multipleTable"
+                            border
+                            height="500"
+                            :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                            @selection-change="handleSelectionChangejxcbf"
+                            style="width: 100%;">
+                        <el-table-column
+                                label="序号"
+                                fixed
+                                type="index"
+                                width="55">
+                        </el-table-column>
+                        <el-table-column
+                                label="时间"
+                                fixed
+                                width="120"
+                                prop="date">
+                        </el-table-column>
+                        <el-table-column
+                                label="产品编号"
+                                width="150"
+                                prop="pnumber">
+                        </el-table-column>
+                        <el-table-column
+                                label="产品名称"
+                                width="150"
+                                prop="pname">
+                        </el-table-column>
+                        <el-table-column
+                                label="规格"
+                                prop="type"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="颜色"
+                                prop="pname"
+                                width="140">
+                        </el-table-column>
+                        <el-table-column
+                                label="期初数"
+                                prop="qcs"
+                                width="160">
+                        </el-table-column>
+                        <el-table-column
+                                label="入库数量"
+                                prop="rccount"
+                                width="150">
+                        </el-table-column>
+                        <el-table-column
+                                label="出库数量"
+                                prop="cccount"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="结存条数"
+                                prop="jccount"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="盘点条数"
+                                prop="pdcount"
+                                width="250">
+                        </el-table-column>
+                        <el-table-column
+                                label="差异条数"
+                                prop="cycount"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                label="盘点状态"
+                                prop="pdstatus"
+                                width="180">
+                        </el-table-column>
+
+                        <el-table-column label="操作" width="250" fixed="right">
+                            <template slot="header" slot-scope="scope">
+                                <el-input
+                                        v-model="search8"
+                                        size="mini"
+                                        placeholder="输入订商品编号"/>
+                            </template>
+                            <template slot-scope="scope">
+
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!--进销存及列表分页-->
+                    <div class="block" style="text-align: center;">
+                        <br>
+                        <el-pagination
+                                @size-change="handleSizeChangejxcbf"
+                                @current-change="handleCurrentChangejxcbf"
+                                :current-page="currentPagejxcbf"
+                                :page-sizes="[10,20,50,1000]"
+                                :page-size="pagesizejxcbf"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="tableData8.length">
+                        </el-pagination>
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
+
+        </template>
+
+    </el-card>
+    <!--出仓单-->
+    <el-dialog
+            title="出仓单"
+            :visible.sync="ccd"
+            width="90%">
+
+    </el-dialog>
+    <!--添加货柜-->
+    <el-dialog
+            title="新增货柜"
+            :visible.sync="addkun"
+            width="40%">
+        <el-form :model="addForm"  ref="addForm" id="addForm" name="addForm"
+                 label-width="130px">
+            <el-form-item label="提单号：" prop="gnumber">
+                <el-input v-model="addForm.gnumber" id="gnumber" placeholder="请输入货柜编号"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="运输方式：" prop="gysfs">
+                <el-input v-model="addForm.gysfs" id="gysfs" placeholder="请输入运输方式"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="尺寸：" prop="gsize">
+                <el-input v-model="addForm.gsize" id="gsize" placeholder="请输入尺寸"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="出港时间：" prop="cgdate">
+                <el-date-picker
+                        v-model="addForm.cgdate"
+                        type="datetime"
+                        :formatter="formatDate"
+                        placeholder="选择出港日期时间"
+                        align="right">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="到港时间：" prop="dgdate">
+                <el-date-picker
+                        v-model="addForm.dgdate"
+                        type="datetime"
+                        :formatter="formatDate"
+                        placeholder="选择到港日期时间"
+                        align="right">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="手机号：" prop="phone">
+                <el-input v-model="addForm.phone" id="phone" placeholder="请输入手机号"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="出发港：" prop="pol">
+                <el-input v-model="addForm.pol" id="pol" placeholder="请输入出发港"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="目的港：" prop="pod">
+                <el-input v-model="addForm.pod" id="pod" placeholder="请输入目的港"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="货柜类别：" prop="type">
+                <el-input v-model="addForm.type" id="type" placeholder="请输入货柜类别"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="货品数量：" prop="count">
+                <el-input v-model="addForm.count" id="count" placeholder="请输入"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="货值：" prop="price">
+                <el-input v-model="addForm.price" id="price" placeholder="请输入货值"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="船公司：" prop="chuanname">
+                <el-input v-model="addForm.chuanname" id="chuanname" placeholder="请输入船公司名称"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="代理：" prop="dlgs">
+                <el-input v-model="addForm.dlgs" id="dlgs" placeholder="请输入代理公司"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="货物详情：" prop="content">
+                <el-input v-model="addForm.content" id="content":rows="8" type="textarea" placeholder="请输入详情：如重量、尺寸 其他说明等"
+                          style="width: 100%;high: 500px;"></el-input>
+            </el-form-item>
+            <el-form-item label="代理费是否支付：" prop="dls" >
+                <el-select v-model="addForm.dls" placeholder="是否支付" style="width: 100%;">
+                    <el-option label="未支付" value="未支付"></el-option>
+                    <el-option label="已支付" value="已支付"></el-option>
+                </el-select>
+            </el-form-item>
+            <!--<el-form-item label="性别：" prop="sex" >
+                <el-select v-model="addForm.sex" placeholder="请选性别" style="width: 100%;">
+                    <el-option label="男" value="男"></el-option>
+                    <el-option label="女" value="女"></el-option>
+                </el-select>
+            </el-form-item>-->
+            <br><br>
+            <div style="text-align: center;">
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="info" @click="addkun = false">取 消</el-button>
+                    <el-button type="primary" @click="submit('addForm')">添  加 货 柜</el-button>
+                </span>
+            </div>
+        </el-form>
+    </el-dialog>
+    <!--编辑货柜信息-->
+    <el-dialog
+            title="修改货柜信息"
+            :visible.sync="editkun"
+            width="40%">
+        <el-form :model="editForm"  ref="editForm" id="editForm" name="editForm"
+                 label-width="130px">
+            <el-form-item label="货柜编号：" prop="gnumber">
+                <el-input v-model="editForm.gnumber" id="gnumber" placeholder="请输入货柜编号"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="运输方式：" prop="gysfs">
+                <el-input v-model="editForm.gysfs" id="gysfs" placeholder="请输入运输方式"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="尺寸：" prop="gsize">
+                <el-input v-model="editForm.gsize" id="gsize" placeholder="请输入尺寸"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="出港时间：" prop="cgdate">
+                <el-date-picker
+                        v-model="editForm.cgdate"
+                        type="datetime"
+                        :formatter="formatDate"
+                        placeholder="选择出港日期时间"
+                        align="right">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="到港时间：" prop="cgdate">
+                <el-date-picker
+                        v-model="editForm.dgdate"
+                        type="datetime"
+                        :formatter="formatDate"
+                        placeholder="选择到港日期时间"
+                        align="right">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="手机号：" prop="phone">
+                <el-input v-model="editForm.phone" id="phone" placeholder="请输入手机号"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="出港：" prop="pol">
+                <el-input v-model="editForm.pol" id="pol" placeholder=""
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="到港：" prop="pod">
+                <el-input v-model="editForm.pod" id="pod" placeholder=""
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="货柜类别：" prop="type">
+                <el-input v-model="editForm.type" id="type" placeholder="请输入货柜类别"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="数量：" prop="count">
+                <el-input v-model="editForm.count" id="count" placeholder="请输入"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="船公司：" prop="count">
+                <el-input v-model="editForm.chuanname" id="chuanname" placeholder="请输入船公司"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="货值：" prop="price">
+                <el-input v-model="editForm.price" id="price" placeholder="请输入货值"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="代理公司：" prop="price">
+                <el-input v-model="editForm.dlgs" id="dlgs" placeholder="请输入代理公司"
+                          style="width: 100%;"></el-input>
+            </el-form-item>
+            <el-form-item label="代理费是否支付：" prop="dls" >
+                <el-select v-model="editForm.dls" placeholder="是否支付" style="width: 100%;">
+                    <el-option label="未支付" value="未支付"></el-option>
+                    <el-option label="已支付" value="已支付"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="货柜状态：" prop="status" >
+                <el-select v-model="editForm.status" placeholder="请选货柜状态" style="width: 100%;">
+                    <el-option label="已到港" value="已到港"></el-option>
+                    <el-option label="未到港" value="未到港"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="货物详情：" prop="content">
+                <el-input v-model="editForm.content" id="content":rows="8" type="textarea" placeholder="请输入详情：如重量、尺寸 其他说明等"
+                          style="width: 100%;high: 500px;"></el-input>
+            </el-form-item>
+
+            <br><br>
+            <div style="text-align: center;">
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="info" @click="editkun = false">取 消</el-button>
+                    <el-button type="primary" @click="edit('editForm')">修 改</el-button>
+                </span>
+            </div>
+        </el-form>
+    </el-dialog>
+    <!--入仓单-->
+    <el-dialog
+            title="入库单"
+            :visible.sync="rcdlog"
+            fullscreen="true"
+            width="100%">
+        <el-form :model="rcdynamicValidateForm" ref="dynamicValidateForm" label-width="60px" class="demo-dynamic">
+        <div v-for="(every, index) in rcdynamicValidateForm.rcdetil" :key="index">
+            <el-descriptions title="" :column="4" border>
+                <el-descriptions-item label="商品编码" label-class-name="my-label" content-class-name="my-content">
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            v-model="every.pnumber">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="产品名称" content-class-name="my-contentcpname">
+                    <el-input
+                        placeholder=""
+                        prefix-icon="el-icon-edit"
+                        v-model="every.pname">
+                </el-input></el-descriptions-item>
+                <el-descriptions-item label="入库时间">
+                    <el-date-picker
+                            v-model="every.rcdate"
+                            type="date"
+                            placeholder="选择日期">
+                    </el-date-picker>
+                </el-descriptions-item>
+                <el-descriptions-item label="入仓数量">
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            @input="rcs(index)"
+                            v-model="every.rccount">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="颜色">
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            v-model="every.color">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="入库方式">
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            v-model="every.rcfs">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="打包方式">
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            v-model="every.dbfs">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="供应商" :contentStyle="{'text-align': 'right'}">
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            v-model="every.gys">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="规格" >
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            v-model="every.type">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="成本单价">
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            @input="cbdj(index)"
+                            v-model="every.costprice">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="所属货柜编码" >
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            v-model="every.sshg">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="商品期初数" >
+                    <el-input
+                            placeholder="默认为0"
+                            prefix-icon="el-icon-edit"
+                            v-model="every.qcs">
+                    </el-input>
+                </el-descriptions-item>
+                <el-descriptions-item label="成本总价" ><span style="color: #ee1039;"><strong>
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            :disabled="true"
+                            v-model="every.costcount"
+                            :id="index">
+                    </el-input>
+                </strong></span></el-descriptions-item>
+            </el-descriptions>
+            <div class="addDelete">
+                <i v-if="index == rcdynamicValidateForm.rcdetil.length - 1"
+                   @click="addOrHanlderrc(index)"
+                   class="el-icon-circle-plus-outline"
+                ></i>
+                <i v-if="index !== rcdynamicValidateForm.rcdetil.length - 1"
+                   @click="deleteOrHandlerrc(every, index)"
+                   class="el-icon-remove-outline"
+                ></i>
+            </div>
+        </div>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+                     <el-button type="primary" @click="orSaveHandlerrc">保 存</el-button>
+                    <el-button  @click="fh">取 消</el-button>
+                 </span>
+
+    </el-dialog>
+    <!--出仓单-->
+    <el-dialog
+            title="出库单"
+            :visible.sync="ccdlog"
+            fullscreen="true"
+            width="100%">
+        订单编号： <el-input
+            :disabled="true"
+            style="width: 150px;"
+            v-model="ccorder">
+    </el-input>
+        <el-form :model="ccdynamicValidateForm" label-width="60px" class="demo-dynamic">
+<br><br><br>
+            <el-row :gutter="15">
+                <el-col :span="3"><div class="grid-content bg-purple">客户名称：
+                    <el-input
+                            placeholder=""
+                            class="borderNone"
+                            v-model="ccdynamicValidateForm.customername">
+                    </el-input>
+
+                </div></el-col>
+                <el-col :span="5">
+                    <div class="grid-content bg-purple-light">送货地址：
+                    <el-input
+                            placeholder=""
+                            v-model="ccdynamicValidateForm.customeraddress">
+                    </el-input></div></el-col>
+                <el-col :span="4"><div class="grid-content bg-purple"> 联系电话：
+                    <el-input
+                            placeholder=""
+                            v-model="ccdynamicValidateForm.customerphone">
+                    </el-input></div></el-col><br>
+                <el-col :span="5"><div class="grid-content bg-purple-light">
+                    配送日期：
+                    <el-date-picker
+                            v-model="ccdynamicValidateForm.ccdate"
+                            type="date"
+                            :formatter="formatDate"
+                            placeholder="选择日期">
+                    </el-date-picker>
+                </div></el-col>
+            </el-row>
+
+
+            <br><br><br>
+            <div v-for="(every, index) in ccdynamicValidateForm.rcdetil" :key="index">
+                <el-descriptions title="" :column="4" border>
+                    <el-descriptions-item label="商品编码" label-class-name="my-label" content-class-name="my-content">
+                        <el-input
+                                placeholder=""
+                                prefix-icon="el-icon-edit"
+                                v-model="every.pnumber">
+                        </el-input>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="产品名称" content-class-name="my-contentcpname">
+                        <el-input
+                                placeholder=""
+                                prefix-icon="el-icon-edit"
+                                v-model="every.pname">
+                        </el-input></el-descriptions-item>
+
+                    <el-descriptions-item label="出仓数量">
+                        <el-input
+                                placeholder=""
+                                prefix-icon="el-icon-edit"
+                                @input="rescc(index)"
+                                v-model="every.cccount">
+                        </el-input>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="颜色">
+                        <el-input
+                                placeholder=""
+                                prefix-icon="el-icon-edit"
+                                v-model="every.color">
+                        </el-input>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="规格" >
+                        <el-input
+                                placeholder=""
+                                prefix-icon="el-icon-edit"
+                                v-model="every.type">
+                        </el-input>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="出库方式" >
+                        <el-input
+                                placeholder=""
+                                prefix-icon="el-icon-edit"
+                                v-model="every.ccfs">
+                        </el-input>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="单价">
+                        <el-input
+                                placeholder=""
+                                prefix-icon="el-icon-edit"
+                                @input="cbdjcc(index)"
+                                v-model="every.ccprice">
+                        </el-input>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="货物总价" ><span style="color: #ee1039;"><strong>
+                    <el-input
+                            placeholder=""
+                            prefix-icon="el-icon-edit"
+                            :disabled="true"
+                            v-model="every.ccsumprice"
+                            :id="index">
+                    </el-input>
+                </strong></span></el-descriptions-item>
+                </el-descriptions>
+                <div class="addDelete">
+                    <i v-if="index == ccdynamicValidateForm.rcdetil.length - 1"
+                       @click="addOrHanldercc(index)"
+                       class="el-icon-circle-plus-outline"
+                    ></i>
+                    <i v-if="index !== ccdynamicValidateForm.rcdetil.length - 1"
+                       @click="deleteOrHandlercc(every, index)"
+                       class="el-icon-remove-outline"
+                    ></i>
+                </div>
+            </div>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+                     <el-button type="primary" @click="orSaveHandlercc">保 存</el-button>
+                    <el-button  @click="ccfh">取 消</el-button>
+                 </span>
+
+    </el-dialog>
+    <!--回到顶部-->
+    <el-backtop style="height: 20px;width: 20px;"> <i class="el-icon-upload2"></i></el-backtop>
+</div>
+</body>
+<script src="/vue/jquery.min.js"></script>
+<script src="/vue/vue.min.js"></script>
+<script src="/vue/element-ui.min.js"></script>
+<script src="/js/coment.js"></script>
+<script src="/js/shouye.js"></script>
+</html>
