@@ -16,10 +16,9 @@ public class UserConfig implements  HandlerInterceptor{
      */
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
-        StringBuffer url = httpServletRequest.getRequestURL();
-        if (httpServletRequest.getSession().getAttribute("token")==null) {
-            httpServletResponse.sendRedirect( httpServletRequest.getContextPath()+"/error.html" );
-        }
+//        StringBuffer url = httpServletRequest.getRequestURL();
+//        if (httpServletRequest.getSession().getAttribute("token")==null) {
+//        }
         return true;
     }
 

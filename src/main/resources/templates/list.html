@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="">
+    <title>Good Life</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="/vue/element-ui.min.css">
+    <!--<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    <script src="https://unpkg.com/wangeditor/dist/wangEditor.min.js"></script>
+</head>
+<script th:inline="javascript" >
+
+    //js获取后端model传过来的对象
+    var p = [[${p}]]
+    sessionStorage.setItem("p",p);
+</script>
+<style>
+    .el-alert {
+        text-align: center;
+    }
+    .db{
+
+        height: 100px;
+
+        width: 100%;
+
+        background-color: #ddd;
+
+        position: fixed;
+
+        bottom: 0;
+
+    }
+</style>
+<body>
+<!--html代码 -->
+</div>
+<div id="app">
+        <el-menu
+                class="el-menu-demo"
+                mode="horizontal"
+                @select="handleSelect"
+                background-color="#050505FF"
+                text-color="#FFFFFF"
+                active-text-color="#ffd04b"
+                style=" font-size: 20px; text-align: center;position: fixed;z-index: 10000000; width: 100%;top:0">
+
+            <el-link :underline="false" href="/index" style="color: #e82c49;font-size: 35px; font-style: italic">Good Life</el-link>&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <el-link href="/index" :underline="false" style="color: #FFFFFF;font-size: 15px;">HOME</el-link>&nbsp;&nbsp;
+
+            <el-link href="/list?p=TV" :underline="false" style="color: #FFFFFF;font-size: 15px;">TV</el-link>&nbsp;&nbsp;
+
+            <el-link href="/list?p=GasStove" :underline="false" style="color: #FFFFFF;font-size: 15px;">Gas Stove</el-link>&nbsp;&nbsp;
+
+            <el-link href="/list?p=Audio" :underline="false" style="color: #FFFFFF;font-size: 15px;">Audio</el-link>&nbsp;&nbsp;
+
+            <el-link href="/list?p=ElectricKettles" :underline="false" style="color: #FFFFFF;font-size: 15px;">Electric Kettles</el-link>&nbsp;&nbsp;
+
+            <el-link href="/list?p=ElectricIron" :underline="false" style="color: #FFFFFF;font-size: 15px;">Electric Iron</el-link>&nbsp;&nbsp;
+
+            <el-link href="/list?p=Ovens" :underline="false" style="color: #FFFFFF;font-size: 15px;">Ovens</el-link>&nbsp;&nbsp;
+
+            <el-link href="/list?p=Juicers" :underline="false" style="color: #FFFFFF;font-size: 15px;">Juicers</el-link>&nbsp;&nbsp;
+
+            <el-link href="/list?p=Solarlighting" :underline="false" style="color: #FFFFFF;font-size: 15px;">Solar lighting</el-link>&nbsp;&nbsp;
+
+        </el-menu><br>
+    <!--logo-->
+    <el-empty image="http://www.clfgoodlife.com/Uploads/654890e3e080a.png" description=" "></el-empty>
+    <!--产品-->
+    <el-link type="danger"></el-link>
+    <template>
+        <div>
+            <span style="color: darkred;margin-left: 15%;"> <strong>{{p}} PRODUCTS</strong></span>
+            <el-divider></el-divider>
+        </div>
+    </template><br>
+    <div style="text-align: center">
+        <strong><span id="ts" style="color: darkred;"></span></strong>
+
+    </div>
+    <div style="text-align: center;margin-left: 15%;">
+    <el-row :gutter="20">
+        <span @click="detail(item)" v-for="item in this.lis" :key="item"><el-col :span="5"><div class="grid-content bg-purple"><el-empty :image=item.url :description=item.name >{{item.detail}}</el-empty></div></el-col>
+    </span>
+         </el-row>
+    </div>
+
+
+
+    <!--底部-->
+    <div style="text-align: center;height: 100px;background-color: #0C0C0C;" class="db">
+<br>
+        <el-row>
+            <el-col :span="24" style="color: #FFFFFF"><strong>CONTACT US</strong> </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24" style="color: #FFFFFF;font-size: 12px;">Contact: Anna Tel: +263781998877 Email: xxxxxxxxxx <br> Address:xxxxxxxxxxx<br>
+                China Good Life
+            </el-col>
+        </el-row>
+    </div>
+    <!--详情页-->
+    <el-dialog
+            title="Detail"
+            :visible.sync="dialogVisible"
+            :fullscreen="true">
+        <el-row :gutter="20">
+            <el-col :span="16"><div class="grid-content bg-purple">
+                <el-image :src=uurl></el-image>
+            </div></el-col>
+            <el-col :span="8"><div class="grid-content bg-purple">
+                <template>
+                    <div>
+                        <span style="color: darkred;margin-left: 15%;"> <strong>{{nname}}</strong></span>
+                        <el-divider></el-divider>
+                    </div>
+                </template>
+                <strong>Pirce :</strong> {{prices}}<br>
+                <strong>{{details}}</strong><br><br><br>
+                <el-button type="primary" icon="el-icon-position" @click="send()" plain>INQUIRY</el-button>
+            </div></el-col>
+        </el-row>
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">return</el-button>
+  </span>
+    </el-dialog>
+    <!--客户信息弹框-->
+
+    <el-dialog
+            title="Send Message"
+            :visible.sync="dialogVisiblec"
+            width="40%">
+
+        <el-form ref="form" :model="form" label-width="130px">
+            <el-form-item label="product name:">
+                <el-input v-model="form.pname"></el-input>
+            </el-form-item>
+            <el-form-item label="Order quantity:">
+                <el-input v-model="form.counts"></el-input>
+            </el-form-item>
+            <el-form-item label="Your Name:">
+                <el-input v-model="form.youname"></el-input>
+            </el-form-item>
+            <el-form-item label="Company name:">
+                <el-input v-model="form.company"></el-input>
+            </el-form-item>
+            <el-form-item label="Address:">
+                <el-input v-model="form.address"></el-input>
+            </el-form-item>
+            <el-form-item label="Phone:">
+                <el-input v-model="form.phone"></el-input>
+            </el-form-item>
+            <el-form-item label="E-mail:">
+                <el-input v-model="form.email"></el-input>
+            </el-form-item>
+            <el-form-item label="Message">
+                <el-input v-model="form.message"></el-input>
+            </el-form-item>
+
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">Send</el-button>
+            </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisiblec = false">return</el-button>
+  </span>
+    </el-dialog>
+
+</div>
+</body>
+<script src="/vue/jquery.min.js"></script>
+<script src="/vue/vue.min.js"></script>
+<script src="/vue/element-ui.min.js"></script>
+<script src="/js/coment.js"></script>
+<script src="/js/list.js"></script>
+</html>
