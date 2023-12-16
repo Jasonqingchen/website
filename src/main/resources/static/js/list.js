@@ -2,6 +2,7 @@ new Vue({
     el: '#app',
     data() {
         return {
+            proname:'',
             activeIndex2:'',
             uurl:'',
             nname:'',
@@ -33,26 +34,54 @@ new Vue({
 //初始化
     mounted: function () {
         var p =sessionStorage.getItem("p");
+        var proname =sessionStorage.getItem("proname");
         var newthis = this;
-        //点击标签弹出列表
-        var url = '/search';
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data:{type:p},
-            dataType: 'json',
-            success: function (result) {
-                document.getElementById("ts").innerText=" ";
-                if(result.length==0){
-                    document.getElementById("ts").innerText="Sorry Don't Find Product";
+
+        if(p!=null && p!=null){
+            //点击标签弹出列表
+            var url = '/search';
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data:{type:p},
+                dataType: 'json',
+                success: function (result) {
+                    document.getElementById("ts").innerText=" ";
+                    if(result.length==0){
+                        document.getElementById("ts").innerText="Sorry Don't Find Product";
+                    }
+                    newthis.lis=result;
+                },
+                error: function () {
+                    console.log('error submit!!');
+                    return false;
                 }
-                newthis.lis=result;
-            },
-            error: function () {
-                console.log('error submit!!');
-                return false;
-            }
-        });
+            });
+        }
+
+
+        if(proname!=null && proname!=null){
+            //主页全局搜索
+            var url = '/zyqjsearch';
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data:{name:proname},
+                dataType: 'json',
+                success: function (result) {
+                    document.getElementById("ts").innerText=" ";
+                    if(result.length==0){
+                        document.getElementById("ts").innerText="Sorry Don't Find Product";
+                    }
+                    newthis.lis=result;
+                },
+                error: function () {
+                    console.log('error submit!!');
+                    return false;
+                }
+            });
+        }
+
 
     },
     //方法事件
@@ -144,6 +173,29 @@ new Vue({
                     done();
                 })
                 .catch(_ => {});
+        },
+        //'全局搜索
+        search(){
+            var newthis =this;
+            var url = '/searchqj';
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: {"proname":this.proname },
+                dataType: 'json',
+                success: function (result) {
+                    document.getElementById("ts").innerText=" ";
+                    if(result.length==0){
+                        document.getElementById("ts").innerText="Sorry Don't Find Product";
+                    }
+                    newthis.lis=result;
+
+                },
+                error: function () {
+                    console.log('error submit!!');
+                    return false;
+                }
+            });
         },
     }
 })

@@ -2,6 +2,7 @@ new Vue({
     el: '#app',
     data() {
         return {
+            proname:'',
             activeIndex2:'',
             item:['http://www.clfgoodlife.com/Uploads/65489437c126e.jpg',
             'http://www.clfgoodlife.com/Uploads/654894592225e.jpg','http://www.clfgoodlife.com/Uploads/654894818da4a.jpg'],
@@ -86,6 +87,31 @@ new Vue({
             this.dialogVisible=true;
 
         },
+        //'全局搜索
+        search(){
+            var newthis =this;
+            // 创建一个 form
+            var form1 = document.createElement("form");
+            document.body.appendChild(form1);
+            // 创建一个输入
+            var input2 = document.createElement("input");
+            // 设置相应参数
+            input2.type = "text";
+            input2.name = "proname";
+            input2.value = newthis.proname;
+            form1.appendChild(input2);
+            // form 的提交方式
+            form1.method = "POST";
+            // form 提交路径
+            form1.action = "/qjlist";
+            // 对该 form 执行提交
+            form1.submit();
+            // 删除该 form
+            document.body.removeChild(form1);
+        },
+
+
+
         send(){
             this.form=[];
             this.form.pname = this.nname;

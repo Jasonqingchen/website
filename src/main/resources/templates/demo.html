@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="">
+    <title>Good Life</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="/vue/element-ui.min.css">
+    <!--<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+</head>
+<body>
+<!--html代码 -->
+</div>
+<div id="app">
+
+    <el-button type="primary" @click="demo()">主要按钮</el-button>
+    <!--弹窗-->
+    <el-dialog
+            title="时间参数"
+            :visible.sync="demodialog"
+    width="60%">
+        <el-divider content-position="right"></el-divider>
+        <!--标签-->
+        <template>
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="一班组" name="first">
+                    <!--内容-->
+                    <el-form ref="form" :model="form" label-width="120px">
+                        <el-row>
+                            <el-col :span="12" style="text-align: center">
+                                <el-form-item label="上班时间" style="text-align: left">
+                                    <template>
+                                        <el-time-select
+                                                placeholder="上班时间"
+                                                v-model="startTime"
+                                                width="50"
+                                                :picker-options="{
+                                                  start: '08:30',
+                                                  step: '00:15',
+                                                  end: '18:30'
+                                                }">
+                                        </el-time-select>
+                                    </template>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="下班时间">
+                                    <template>
+                                        <el-time-select
+                                                placeholder="下班时间"
+                                                v-model="endTime"
+
+                                                :picker-options="{
+                                              start: '08:30',
+                                              step: '00:15',
+                                              end: '18:30'
+                                            }">
+                                        </el-time-select>
+                                    </template>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <!--循环操作-->
+                        <el-card class="box-card">
+                            <template>
+                                <ul class="list" style="overflow:auto" infinite-scroll-disabled="disabled">
+                                    <div style="text-align:center;">
+                                        <el-form :inline="true"
+                                                 class="demo-form-inline"
+                                                 ref="orRuleForm"
+                                                 :model="orRuleForm">
+                                            <el-row style="text-align: left;font-size: 20px;">
+                                                <el-col :span="6"><div class="grid-content bg-purple">间休</div></el-col>
+                                                <el-col :span="6"><div class="grid-content bg-purple-light">开始时间</div></el-col>
+                                                <el-col :span="6"><div class="grid-content bg-purple"></div>结束时间</el-col>
+                                                <el-col :span="6"><div class="grid-content bg-purple-light"></div></el-col>
+                                            </el-row><br>
+                                            <!--循环加载点字段-->
+                                            <div v-for="(every, index) in orRuleForm.orFormList" :key="index">
+                                                <el-row style="width: 100%">
+                                                    <el-col :span="2"><div class="grid-content bg-purple">{{index+1}} .</div></el-col>
+                                                    <el-col :span="8"><div class="grid-content bg-purple-light">
+                                                        <el-form-item
+                                                                label=""
+                                                                :prop="'orFormList.' + index + '.stime'">
+                                                            <template>
+                                                                <el-time-select
+                                                                        placeholder="上班时间"
+                                                                        v-model="every.stime"
+                                                                        width="50"
+                                                                        :picker-options="{
+                                                                      start: '08:30',
+                                                                      step: '00:15',
+                                                                      end: '18:30'
+                                                                    }">
+                                                                </el-time-select>
+                                                            </template>
+                                                        </el-form-item>
+                                                    </div></el-col>
+                                                    <el-col :span="2"><div class="grid-content bg-purple"><strong style="font-size: 15px;">~</strong></div></el-col>
+                                                    <el-col :span="8"><div class="grid-content bg-purple">
+                                                        <el-form-item
+                                                                label=""
+                                                                :prop="'orFormList.' + index + '.etime'">
+                                                            <template>
+                                                                <el-time-select
+                                                                        placeholder="下班时间"
+                                                                        v-model="every.etime"
+                                                                        width="50"
+                                                                        :picker-options="{
+                                                                      start: '08:30',
+                                                                      step: '00:15',
+                                                                      end: '18:30'
+                                                                    }">
+                                                                </el-time-select>
+                                                            </template>
+                                                        </el-form-item>
+                                                    </div></el-col>
+                                                    <el-col :span="2">
+                                                        <!--增加行减少行按钮-->
+                                                        <div class="addDelete">
+                                                            <i v-if="index == orRuleForm.orFormList.length - 1"
+                                                               @click="addOrHanlder(index)"
+                                                               class="el-icon-circle-plus-outline"
+                                                               style="color: #1a6eec"
+                                                            ><strong>新增</strong></i>
+                                                            <i v-if="index !== orRuleForm.orFormList.length - 1"
+                                                               @click="deleteOrHandler(every, index)"
+                                                               class="el-icon-remove-outline"
+                                                               style="color: red"
+                                                            ><strong>删除</strong></i>
+                                                        </div>
+                                                    </el-col>
+                                                </el-row>
+
+
+
+                                            </div>
+                                        </el-form>
+                                    </div>
+                                </ul>
+                            </template>
+                        </el-card><br>
+                        <!-- 工作日合计-->
+                        <el-form-item label="合计日工时">
+                            <el-input placeholder="" :disabled="true" v-model="countnumber" style="width: 100%;">
+                                <template slot="append">小时</template>
+                            </el-input>
+                        </el-form-item>h
+                    </el-form>
+                    <el-divider content-position="right"></el-divider>
+
+
+                </el-tab-pane>
+                <el-tab-pane label="二班组" name="second">二班组</el-tab-pane>
+                <el-tab-pane label="三班组" name="third">三班组</el-tab-pane>
+            </el-tabs>
+        </template>
+
+
+        <span slot="footer" class="dialog-footer">
+                         <el-button type="primary" @click="orSaveHandler">保 存</el-button>
+                        <el-button  @click="fh">取  消</el-button>
+                     </span>
+
+    </el-dialog>
+
+</div>
+</body>
+<script src="/vue/jquery.min.js"></script>
+<script src="/vue/vue.min.js"></script>
+<script src="/vue/element-ui.min.js"></script>
+<script src="/js/coment.js"></script>
+<script src="/js/demo.js"></script>
+</html>

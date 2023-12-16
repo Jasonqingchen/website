@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -32,13 +34,40 @@ private CustomerlistMapper cl;
     }
 
     /**
-     * 条件搜索
+     * 条件搜索 导航栏搜索
      */
     @RequestMapping("/list")
     public String list(Model model,@RequestParam(value = "p", required = false) String tv) {
         model.addAttribute("p",tv);
         return "list";
     }
+
+
+    /**
+     * 全局搜索
+     */
+    @RequestMapping("/searchqj")
+    @ResponseBody
+    public List<Product> searchqj(String proname) {
+        List<Product> list = new ArrayList<>();
+        if(proname.isEmpty()){
+            return list;
+        } else {
+            list = pm.selectByNameLike(proname);
+        }
+        return list;
+    }
+
+
+    /**
+     * 条件搜索 主页全局搜索
+     */
+    @RequestMapping("/qjlist")
+    public String qjlist(Model model,String proname) {
+        model.addAttribute("proname",proname);
+        return "list";
+    }
+
 
     /**
      * add customer message
@@ -60,6 +89,17 @@ private CustomerlistMapper cl;
         List<Product> list = pm.selectByName(product.getType());
         return list;
     }
+
+    /**
+     * add customer message
+     */
+    @RequestMapping("/zyqjsearch")
+    @ResponseBody
+    public List<Product> zyqjsearch (Product product){
+        List<Product> list = pm.selectByNameLike(product.getName());
+        return list;
+    }
+
 
     /**
      * first page search (随机查询)
@@ -92,6 +132,15 @@ private CustomerlistMapper cl;
     public List<Product> emp (Product product){
         List<Product> list = pm.selectEmpByTppe();
         return list;
+    }
+
+    /**
+     * emp style
+     * 暂时查询所有 等待前台建设好后进行添加条件
+     */
+    @RequestMapping("/demo")
+    public String demo (){
+        return "demo";
     }
 
 

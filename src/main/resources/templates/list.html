@@ -5,14 +5,14 @@
     <title>Good Life</title>
     <!-- 引入样式 -->
     <link rel="stylesheet" href="/vue/element-ui.min.css">
-    <!--<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
-    <script src="https://unpkg.com/wangeditor/dist/wangEditor.min.js"></script>
 </head>
 <script th:inline="javascript" >
 
     //js获取后端model传过来的对象
     var p = [[${p}]]
-    sessionStorage.setItem("p",p);
+    sessionStorage.setItem("p",p);//js获取后端model传过来的对象
+    var proname = [[${proname}]]
+    sessionStorage.setItem("proname",proname);
 </script>
 <style>
     .el-alert {
@@ -65,14 +65,20 @@
 
             <el-link href="/list?p=Solarlighting" :underline="false" style="color: #FFFFFF;font-size: 15px;">Solar lighting</el-link>&nbsp;&nbsp;
 
-        </el-menu><br>
+            <div style="margin-top: 15px; width: 100%; background-color: #0C0C0C">
+                <el-input placeholder="enter product name please" v-model="proname" clearable class="input-with-select">
+                    <el-button slot="append" icon="el-icon-search" @click="search()">search</el-button>
+                </el-input>
+            </div>
+
+        </el-menu><br><br><br>
     <!--logo-->
     <el-empty image="http://www.clfgoodlife.com/Uploads/654890e3e080a.png" description=" "></el-empty>
     <!--产品-->
     <el-link type="danger"></el-link>
     <template>
         <div>
-            <span style="color: darkred;margin-left: 15%;"> <strong>{{p}} PRODUCTS</strong></span>
+            <span style="color: darkred;margin-left: 15%;"> <strong>PRODUCTS LIST</strong></span>
             <el-divider></el-divider>
         </div>
     </template><br>

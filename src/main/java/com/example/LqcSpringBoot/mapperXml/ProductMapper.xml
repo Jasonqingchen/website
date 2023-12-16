@@ -26,5 +26,10 @@
   <select id="selectEmpByTppe" resultMap="BaseResultMap">
     select *,type from product where type="emp"
   </select>
+  <!--like all search product -->
+  <select id="selectByNameLike" resultMap="BaseResultMap">
+    select * from product where  name like concat('%',#{proname},'%')
+  </select>
+
 
 </mapper>

@@ -41,6 +41,15 @@
 
             <el-link href="/list?p=Solarlighting" :underline="false" style="color: #FFFFFF;font-size: 15px;">Solar lighting</el-link>&nbsp;&nbsp;
 
+            <!--<i class="el-icon-search" style="color: #FFFFFF;font-size: 15px;"></i>&nbsp;&nbsp;
+
+            <span><el-input v-model="proname" placeholder="enter product name please "></el-input></span>-->
+            <div style="margin-top: 15px; width: 100%; background-color: #0C0C0C">
+                <el-input placeholder="enter product name please" v-model="proname" clearable class="input-with-select">
+                    <el-button slot="append" icon="el-icon-search" @click="search()">search</el-button>
+                </el-input>
+            </div>
+
 
         </el-menu>
     <div style="width: 100%;top:0;left: 0;right: 0">

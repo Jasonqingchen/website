@@ -13,6 +13,8 @@ public interface ProductMapper extends BaseMapper<Product>{
     List<Product> selectnewproduct();
     List<Product> randsearch();
     List<Product> selectEmpByTppe();
+    //全局搜索
+    List<Product> selectByNameLike(String proname);
 
 
 
