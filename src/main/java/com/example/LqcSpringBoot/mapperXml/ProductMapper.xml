@@ -16,11 +16,11 @@
   </select>
 <!--new product -->
   <select id="selectnewproduct" resultMap="BaseResultMap">
-    select * from product order BY tim DESC limit 4
+    select * from product where type != 'emp' order BY tim DESC limit 4
   </select>
   <!--prand search product -->
   <select id="randsearch" resultMap="BaseResultMap">
-    select *,type from product order by rand() limit 8
+    select *,type from product where type != 'emp' order by rand() limit 8
   </select>
   <!--prand search product -->
   <select id="selectEmpByTppe" resultMap="BaseResultMap">
