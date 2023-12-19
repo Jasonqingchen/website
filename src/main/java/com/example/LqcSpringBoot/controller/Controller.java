@@ -1,4 +1,5 @@
 package com.example.LqcSpringBoot.controller;
+
 import com.example.LqcSpringBoot.mapper.CustomerlistMapper;
 import com.example.LqcSpringBoot.mapper.ProductMapper;
 import com.example.LqcSpringBoot.model.Customerlist;
@@ -21,10 +22,11 @@ import java.util.UUID;
  */
 @org.springframework.stereotype.Controller
 public class Controller {
-@Autowired
-private CustomerlistMapper cl;
+    @Autowired
+    private CustomerlistMapper cl;
     @Autowired
     private ProductMapper pm;
+
     /**
      * 条件搜索
      */
@@ -37,8 +39,8 @@ private CustomerlistMapper cl;
      * 条件搜索 导航栏搜索
      */
     @RequestMapping("/list")
-    public String list(Model model,@RequestParam(value = "p", required = false) String tv) {
-        model.addAttribute("p",tv);
+    public String list(Model model, @RequestParam(value = "p", required = false) String tv) {
+        model.addAttribute("p", tv);
         return "list";
     }
 
@@ -50,7 +52,7 @@ private CustomerlistMapper cl;
     @ResponseBody
     public List<Product> searchqj(String proname) {
         List<Product> list = new ArrayList<>();
-        if(proname.isEmpty()){
+        if (proname.isEmpty()) {
             return list;
         } else {
             list = pm.selectByNameLike(proname);
@@ -63,8 +65,8 @@ private CustomerlistMapper cl;
      * 条件搜索 主页全局搜索
      */
     @RequestMapping("/qjlist")
-    public String qjlist(Model model,String proname) {
-        model.addAttribute("proname",proname);
+    public String qjlist(Model model, String proname) {
+        model.addAttribute("proname", proname);
         return "list";
     }
 
@@ -74,8 +76,8 @@ private CustomerlistMapper cl;
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Integer add (Customerlist customerlist){
-       customerlist.setId(UUID.randomUUID().toString().replace("-", "").toString());
+    public Integer add(Customerlist customerlist) {
+        customerlist.setId(UUID.randomUUID().toString().replace("-", "").toString());
         int insert = cl.insert(customerlist);
         return insert;
     }
@@ -85,8 +87,8 @@ private CustomerlistMapper cl;
      */
     @RequestMapping("/search")
     @ResponseBody
-    public List<Product> search (Product product){
-        List<Product> list = pm.selectByName(product.getType());
+    public List<Product> search(Product product) {
+        List<Product> list = pm.selectByName(product.getPtype());
         return list;
     }
 
@@ -95,8 +97,8 @@ private CustomerlistMapper cl;
      */
     @RequestMapping("/zyqjsearch")
     @ResponseBody
-    public List<Product> zyqjsearch (Product product){
-        List<Product> list = pm.selectByNameLike(product.getName());
+    public List<Product> zyqjsearch(Product product) {
+        List<Product> list = pm.selectByNameLike(product.getPname());
         return list;
     }
 
@@ -107,7 +109,7 @@ private CustomerlistMapper cl;
      */
     @RequestMapping("/search2")
     @ResponseBody
-    public List<Product> searchFirctPage (Product product){
+    public List<Product> searchFirctPage(Product product) {
         List<Product> list = pm.randsearch();
         return list;
     }
@@ -118,7 +120,7 @@ private CustomerlistMapper cl;
      */
     @RequestMapping("/search3")
     @ResponseBody
-    public List<Product> searchNewProduct (Product product){
+    public List<Product> searchNewProduct(Product product) {
         List<Product> list = pm.selectnewproduct();
         return list;
     }
@@ -129,19 +131,52 @@ private CustomerlistMapper cl;
      */
     @RequestMapping("/search4")
     @ResponseBody
-    public List<Product> emp (Product product){
+    public List<Product> emp(Product product) {
         List<Product> list = pm.selectEmpByTppe();
         return list;
     }
 
     /**
-     * emp style
-     * 暂时查询所有 等待前台建设好后进行添加条件
+     * upload picture url
+     * 后台照片上传
      */
-    @RequestMapping("/demo")
-    public String demo (){
-        return "demo";
+    @RequestMapping("/upload")
+    public String demo() {
+        return "backstage";
     }
+
+    /**
+     * 后台保存
+     */
+    @RequestMapping("/addhtdata")
+    @ResponseBody
+    public Integer addhtdata(Product product) {
+        product.setPname(product.getPname().substring(0, product.getPname().indexOf(".")));
+        product.setId(UUID.randomUUID().toString());
+        return pm.insert(product);
+    }
+
+    /**
+     * 后台查询
+     */
+    @RequestMapping("/listdata")
+    @ResponseBody
+    public List<Product> listdata() {
+        return pm.selectList(null);
+    }
+
+    /**
+     * 后台删除
+     */
+    @RequestMapping("/delete")
+    @ResponseBody
+    public Integer delete(Product product) {
+        Integer count = pm.deleteById(product.getId());
+        return count;
+    }
+
+
+
 
 
 }

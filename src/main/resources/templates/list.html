@@ -88,7 +88,7 @@
     </div>
     <div style="text-align: center;margin-left: 15%;">
     <el-row :gutter="20">
-        <span @click="detail(item)" v-for="item in this.lis" :key="item"><el-col :span="5"><div class="grid-content bg-purple"><el-empty :image=item.url :description=item.name >{{item.detail}}</el-empty></div></el-col>
+        <span @click="detail(item)" v-for="item in this.lis" :key="item"><el-col :span="5"><div class="grid-content bg-purple"><el-empty :image=item.purl :description=item.pname >{{item.detail}}</el-empty></div></el-col>
     </span>
          </el-row>
     </div>

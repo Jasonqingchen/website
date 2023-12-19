@@ -5,15 +5,15 @@ import java.io.Serializable;
 public class Product implements Serializable {
     private String id;
 
-    private String url;
+    private String purl;
 
-    private String name;
+    private String pname;
 
     private String price ;
 
     private String detail;
 
-    private String type;
+    private String ptype;
 
     private String tim;
 
@@ -26,22 +26,6 @@ public class Product implements Serializable {
 
     public void setId(String id) {
         this.id = id == null ? null : id.trim();
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getPrice() {
@@ -60,19 +44,35 @@ public class Product implements Serializable {
         this.detail = detail;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getTim() {
         return tim;
     }
 
     public void setTim(String tim) {
         this.tim = tim;
+    }
+
+    public String getPurl() {
+        return purl;
+    }
+
+    public void setPurl(String purl) {
+        this.purl = purl;
+    }
+
+    public String getPname() {
+        return pname;
+    }
+
+    public void setPname(String pname) {
+        this.pname = pname;
+    }
+
+    public String getPtype() {
+        return ptype;
+    }
+
+    public void setPtype(String ptype) {
+        this.ptype = ptype;
     }
 }

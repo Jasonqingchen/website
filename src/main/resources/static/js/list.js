@@ -43,7 +43,7 @@ new Vue({
             $.ajax({
                 type: 'POST',
                 url: url,
-                data:{type:p},
+                data:{ptype:p},
                 dataType: 'json',
                 success: function (result) {
                     document.getElementById("ts").innerText=" ";
@@ -66,7 +66,7 @@ new Vue({
             $.ajax({
                 type: 'POST',
                 url: url,
-                data:{name:proname},
+                data:{pname:proname},
                 dataType: 'json',
                 success: function (result) {
                     document.getElementById("ts").innerText=" ";
@@ -87,8 +87,8 @@ new Vue({
     //方法事件
     methods: {
         detail(val){
-            this.uurl = val.url;
-            this.nname = val.name;
+            this.uurl = val.purl;
+            this.nname = val.pname;
             this.details = val.detail;
             this.prices = val.price;
             //打开详情页

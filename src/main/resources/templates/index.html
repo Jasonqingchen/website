@@ -94,7 +94,7 @@
     </div>-->
     <div style="text-align: center;margin-left: 15%;">
         <el-row :gutter="20">
-        <span @click="detail(item)" v-for="item in this.lispage" :key="item"><el-col :span="5"><div class="grid-content bg-purple"><el-empty :image=item.url :description=item.name >{{item.detail}}</el-empty></div></el-col>
+        <span @click="detail(item)" v-for="item in this.lispage" :key="item"><el-col :span="5"><div class="grid-content bg-purple"><el-empty :image=item.purl :description=item.pname >{{item.detail}}</el-empty></div></el-col>
     </span>
         </el-row>
     </div>
@@ -109,7 +109,7 @@
 
     <div style="text-align: center;margin-left: 15%;">
         <el-row :gutter="20">
-        <span @click="detail(item)" style="height: 400px;width: 600px;" v-for="item in this.lispagenew" :key="item"><el-col :span="5"><div class="grid-content bg-purple"><el-empty :image=item.url :description=item.name>{{item.detail}}</el-empty></div></el-col>
+        <span @click="detail(item)" style="height: 400px;width: 600px;" v-for="item in this.lispagenew" :key="item"><el-col :span="5"><div class="grid-content bg-purple"><el-empty :image=item.purl :description=item.pname>{{item.detail}}</el-empty></div></el-col>
     </span>
         </el-row>
     </div>
@@ -141,7 +141,7 @@
             <el-carousel-item v-for="(q,i) in this.emp" :key="q">
                 <el-image
                         style="width: 100%"
-                        :src=q.url
+                        :src=q.purl
                 ></el-image>
             </el-carousel-item>
         </el-carousel>

@@ -3,32 +3,32 @@
 <mapper namespace="com.example.LqcSpringBoot.mapper.ProductMapper" >
   <resultMap id="BaseResultMap" type="com.example.LqcSpringBoot.model.Product" >
     <result column="id" property="id" jdbcType="VARCHAR" />
-    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="purl" property="purl" jdbcType="VARCHAR" />
     <result column="price" property="price" jdbcType="VARCHAR" />
     <result column="detail" property="detail" jdbcType="VARCHAR" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="ptype" property="ptype" jdbcType="VARCHAR" />
     <result column="tim" property="tim" jdbcType="VARCHAR" />
   </resultMap>
 <!--search list by type-->
   <select id="selectByName" resultMap="BaseResultMap">
-    select * from product where type = #{type}
+    select * from product where ptype = #{type}
   </select>
 <!--new product -->
   <select id="selectnewproduct" resultMap="BaseResultMap">
-    select * from product where type != 'emp' order BY tim DESC limit 4
+    select * from product where ptype != 'emp' order BY tim DESC limit 4
   </select>
   <!--prand search product -->
   <select id="randsearch" resultMap="BaseResultMap">
-    select *,type from product where type != 'emp' order by rand() limit 8
+    select *,ptype from product where ptype != 'emp' order by rand() limit 8
   </select>
   <!--prand search product -->
   <select id="selectEmpByTppe" resultMap="BaseResultMap">
-    select *,type from product where type="emp"
+    select *,ptype from product where ptype="emp"
   </select>
   <!--like all search product -->
   <select id="selectByNameLike" resultMap="BaseResultMap">
-    select * from product where  name like concat('%',#{proname},'%')
+    select * from product where  pname like concat('%',#{proname},'%')
   </select>
 
 
