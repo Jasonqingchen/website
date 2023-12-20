@@ -39,8 +39,8 @@ public class Controller {
      * 条件搜索 导航栏搜索
      */
     @RequestMapping("/list")
-    public String list(Model model, @RequestParam(value = "p", required = false) String tv) {
-        model.addAttribute("p", tv);
+    public String list(Model model, @RequestParam(value = "p", required = false) String pre) {
+        model.addAttribute("p", pre);
         return "list";
     }
 

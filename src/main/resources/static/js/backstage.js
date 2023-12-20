@@ -86,7 +86,7 @@ new Vue({
                 return;
             }
 
-            this.$refs.upload.submit();
+
 
             var newthis = this;
             var d={
@@ -111,6 +111,7 @@ new Vue({
                             type: 'success',
                             offset: 300
                         });
+                        newthis.$refs.upload.submit();
                     } else {
                         newthis.$message.error('Im sorry submit error !');
                     }
